@@ -1,25 +1,57 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import Home from '../views/Home.vue'
 
+const files = require.context('../views', true, /\.vue$/);
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: '/Home'
   },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
 ]
+
+files.keys().forEach(key => {
+  const module = files(key).default;
+  if (/component|module|util/i.test(key)) return; // 过滤组件
+  if (!module.name) throw new Error('page module must have a name');
+  const name = module.name;
+  const meta = Object.assign({title: name}, module.routeMeta);
+  routes.push({
+    path: `/${name}`,
+    name: name,
+    component: module,
+    meta,
+  })
+})
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    let pos: any = null;
+    if (to.hash) {
+      pos = { el: to.hash }
+    } else if (savedPosition) {
+      pos = savedPosition
+    } else {
+      pos = { top: 0 }
+    }
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(pos)
+      }, 300)
+    })
+  },
+})
+
+router.beforeEach((to) => {
+  if (to.meta.requiresAuth) {
+    document.title = '登录';
+    return {
+      path: '/Login',
+      // 保存我们所在的位置，以便以后再来
+      query: { redirect: to.fullPath },
+    }
+  }
+  document.title = <string>to.meta.title;
 })
 
 export default router
