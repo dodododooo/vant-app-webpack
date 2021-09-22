@@ -5,4 +5,4 @@ import {store, key} from './store';
 import plugins from './plugins';
 
 const app = createApp(App);
-app.use(store, key).use(router).use(plugins).mount('#app');
+app.use(router).use(store, key).use(plugins).mount('#app');

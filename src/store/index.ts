@@ -1,30 +1,25 @@
-import { InjectionKey } from 'vue'
-import { createStore, useStore as baseUseStore, Store, ModuleTree } from 'vuex'
-
-
-export interface State {
-  count: number
+import { InjectionKey } from 'vue';
+import { createStore, useStore as baseUseStore, Store } from 'vuex';
+import user, { User } from './modules/user'
+export interface RootState {
+  keepAliveComponents: string;
 }
 
-const files = require.context('./modules', false, /\.ts$/);
-const modules: ModuleTree<State> = {};
+interface AllState extends RootState {
+  user: User;
+}
 
-files.keys().forEach(key => {
-  modules[key.replace(/(\.\/|\.ts)/g, '')] = files(key).default;
-})
+export const key: InjectionKey<Store<RootState>> = Symbol();
 
-export const key: InjectionKey<Store<State>> = Symbol();
-
-export const store = createStore<State>({
+export const store = createStore<RootState>({
   state: {
-    count: 0
+    keepAliveComponents: '',
   },
   modules: {
-    ...modules
+    user
   }
 })
 
-console.log(store)
-export function useStore() {
-  return baseUseStore(key)
+export function useStore<T = AllState>() {
+  return baseUseStore<T>(key)
 }

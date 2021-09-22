@@ -10,7 +10,8 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'About',
   routeMeta: {
-    title: '关于'
+    title: '关于',
+    keepAlive: true,
   },
 });
 </script>

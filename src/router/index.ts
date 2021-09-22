@@ -1,5 +1,7 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { store } from '@/store';
 
+const aliveComponents: string[] = [];
 const files = require.context('../views', true, /\.vue$/);
 const routes: Array<RouteRecordRaw> = [
   {
@@ -8,12 +10,14 @@ const routes: Array<RouteRecordRaw> = [
   },
 ]
 
+
 files.keys().forEach(key => {
   const module = files(key).default;
   if (/component|module|util/i.test(key)) return; // 过滤组件
   if (!module.name) throw new Error('page module must have a name');
   const name = module.name;
   const meta = Object.assign({title: name}, module.routeMeta);
+  if (meta.keepAlive) aliveComponents.push(name);
   routes.push({
     path: `/${name}`,
     name: name,
@@ -22,10 +26,14 @@ files.keys().forEach(key => {
   })
 })
 
+// 初始化全局state keepAliveComponents
+store.state.keepAliveComponents = aliveComponents.join(',');
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let pos: any = null;
     if (to.hash) {
       pos = { el: to.hash }

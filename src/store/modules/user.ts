@@ -1,7 +1,19 @@
-export default {
+import { Module } from 'vuex';
+import { RootState } from '..';
+
+export interface User {
+  name: string;
+}
+
+const user: Module<User, RootState> = {
   state: {
-    userInfo: '',
+    name: '',
+  },
+  getters: {
+
   },
   mutations: {},
   actions: {}
 }
+
+export default user;
