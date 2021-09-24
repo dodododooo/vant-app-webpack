@@ -13,7 +13,7 @@ const routes: Array<RouteRecordRaw> = [
 
 files.keys().forEach(key => {
   const module = files(key).default;
-  if (/component|module|util/i.test(key)) return; // 过滤组件
+  if (/component|module|util|use/i.test(key)) return; // 过滤组件, hooks
   if (!module.name) throw new Error('page module must have a name');
   const name = module.name;
   const meta = Object.assign({title: name}, module.routeMeta);
