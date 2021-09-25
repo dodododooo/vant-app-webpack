@@ -1,5 +1,6 @@
 <template>
   <div class="index">
+    User
   </div>
 </template>
 
@@ -7,7 +8,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'index',
+  name: 'User',
   components: {},
   setup(props) {
     // do something
